@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearch } from '../hooks/useSearch'
 import SearchCounter from '../components/SearchCounter'
 import BookCard from '../components/BookCard'
+
+const DEFAULT_TITLE = 'Audiobook Search — Find Free & Paid Audiobooks Across All Platforms'
 
 const EXAMPLE_SEARCHES = ['Sherlock Holmes', 'Dune', 'Sapiens', 'Jane Eyre', 'The Hobbit']
 
@@ -11,19 +13,42 @@ export default function SearchPage() {
 
   const hasSearched = completedCount > 0 || isLoading
 
+  // Run search from URL ?q= on first load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('q')
+    if (q) {
+      setQuery(q)
+      search(q)
+      document.title = `"${q}" — Audiobook Search`
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function runSearch(term: string) {
+    search(term)
+    document.title = `"${term}" — Audiobook Search`
+    const url = new URL(window.location.href)
+    url.searchParams.set('q', term)
+    window.history.pushState({}, '', url)
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (query.trim()) search(query)
+    if (query.trim()) runSearch(query)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value)
-    if (!e.target.value.trim()) reset()
+    if (!e.target.value.trim()) {
+      reset()
+      document.title = DEFAULT_TITLE
+      window.history.pushState({}, '', '/')
+    }
   }
 
   function handleExample(term: string) {
     setQuery(term)
-    search(term)
+    runSearch(term)
   }
 
   return (

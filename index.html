@@ -2,9 +2,47 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tmp-scaffold</title>
+
+    <!-- Primary meta -->
+    <title>Audiobook Search — Find Free & Paid Audiobooks Across All Platforms</title>
+    <meta name="description" content="Search for any audiobook and instantly see where it's available — free on LibriVox, Internet Archive, or paid on Audible, Apple Books, Spotify, and more. One search, all platforms." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://audiobook-search.pages.dev/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://audiobook-search.pages.dev/" />
+    <meta property="og:title" content="Audiobook Search — Find Free & Paid Audiobooks Across All Platforms" />
+    <meta property="og:description" content="Search for any audiobook and instantly see where it's available — free on LibriVox, Internet Archive, or paid on Audible, Apple Books, Spotify, and more." />
+    <meta property="og:image" content="https://audiobook-search.pages.dev/og.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Audiobook Search — Find Free & Paid Audiobooks Across All Platforms" />
+    <meta name="twitter:description" content="Search for any audiobook and instantly see where it's available — free or paid — across all platforms at once." />
+    <meta name="twitter:image" content="https://audiobook-search.pages.dev/og.png" />
+
+    <!-- JSON-LD: Website + SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Audiobook Search",
+      "url": "https://audiobook-search.pages.dev/",
+      "description": "Search for any audiobook and instantly see where it's available — free or paid — across all platforms at once.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://audiobook-search.pages.dev/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
     <div id="root"></div>

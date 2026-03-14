@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://audiobook-search.pages.dev/sitemap.xml
