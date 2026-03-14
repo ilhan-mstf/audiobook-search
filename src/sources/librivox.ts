@@ -42,9 +42,7 @@ export async function search(query: string): Promise<Book[]> {
     offset: '0',
   })
 
-  const res = await fetch(
-    `https://librivox.org/api/feed/audiobooks/?${params}`
-  )
+  const res = await fetch(`/api/librivox?${params}`)
   if (!res.ok) return []
 
   const data: LVResponse = await res.json()

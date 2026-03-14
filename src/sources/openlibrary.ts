@@ -29,7 +29,7 @@ export async function search(query: string): Promise<Book[]> {
     limit: '10',
   })
 
-  const res = await fetch(`https://openlibrary.org/search/books.json?${params}`)
+  const res = await fetch(`https://openlibrary.org/search.json?${params}`)
   if (!res.ok) return []
 
   const data: OLResponse = await res.json()
