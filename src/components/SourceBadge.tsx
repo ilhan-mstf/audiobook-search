@@ -26,33 +26,96 @@ export default function SourceBadge({ source, muted = false }: Props) {
   const url = source.affiliateUrl ?? source.sourceUrl
   const isLibrary = source.sourceName === 'libby' || source.sourceName === 'hoopla'
 
-  const price =
-    source.isFree || isLibrary
-      ? isLibrary
-        ? 'Library'
-        : 'Free'
-      : source.priceUsd != null
-        ? `$${source.priceUsd.toFixed(2)}`
-        : 'View'
+  const price = source.isFree || isLibrary
+    ? isLibrary ? 'Library' : 'Free'
+    : source.priceUsd != null
+      ? `$${source.priceUsd.toFixed(2)}`
+      : 'View'
 
-  const colorClass = muted
-    ? 'bg-white text-gray-400 border-gray-200 hover:text-gray-600 hover:border-gray-300'
-    : source.isFree || isLibrary
-      ? isLibrary
-        ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-        : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-      : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+  if (muted) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all border"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          borderColor: 'rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.35)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
+          e.currentTarget.style.color = 'rgba(255,255,255,0.6)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
+          e.currentTarget.style.color = 'rgba(255,255,255,0.35)'
+        }}
+      >
+        {label}
+      </a>
+    )
+  }
 
+  // Free
+  if (source.isFree && !isLibrary) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border"
+        style={{
+          background: 'rgba(16,185,129,0.12)',
+          borderColor: 'rgba(16,185,129,0.3)',
+          color: '#34d399',
+        }}
+      >
+        <span>{label}</span>
+        <span className="opacity-50">·</span>
+        <span>{price}</span>
+      </a>
+    )
+  }
+
+  // Library
+  if (isLibrary) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border"
+        style={{
+          background: 'rgba(59,130,246,0.12)',
+          borderColor: 'rgba(59,130,246,0.3)',
+          color: '#60a5fa',
+        }}
+      >
+        <span>{label}</span>
+        <span className="opacity-50">·</span>
+        <span>{price}</span>
+      </a>
+    )
+  }
+
+  // Paid
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors ${colorClass}`}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border"
+      style={{
+        background: 'rgba(255,255,255,0.06)',
+        borderColor: 'rgba(255,255,255,0.12)',
+        color: 'rgba(255,255,255,0.7)',
+      }}
     >
       <span>{label}</span>
-      <span className="opacity-60">·</span>
-      <span>{price}</span>
+      <span className="opacity-40">·</span>
+      <span style={{ color: 'rgba(255,255,255,0.45)' }}>{price}</span>
     </a>
   )
 }

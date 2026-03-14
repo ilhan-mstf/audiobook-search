@@ -5,7 +5,6 @@ interface Props {
   book: Book
 }
 
-// Sources where we have API confirmation the book exists
 const CONFIRMED_SOURCES = new Set([
   'librivox',
   'internet_archive',
@@ -21,27 +20,24 @@ function formatDuration(seconds: number): string {
   return `${m}m`
 }
 
-// Gradient based on title for consistent per-book color
-function getCoverGradient(title: string): string {
-  const gradients = [
-    'from-violet-400 to-indigo-500',
-    'from-rose-400 to-pink-500',
-    'from-amber-400 to-orange-500',
-    'from-teal-400 to-cyan-500',
-    'from-emerald-400 to-green-500',
-    'from-blue-400 to-indigo-500',
-    'from-fuchsia-400 to-purple-500',
-  ]
-  const idx = title.charCodeAt(0) % gradients.length
-  return gradients[idx]
-}
+const GRADIENTS = [
+  ['#7c3aed', '#4f46e5'],
+  ['#db2777', '#9d174d'],
+  ['#d97706', '#b45309'],
+  ['#0891b2', '#0e7490'],
+  ['#059669', '#047857'],
+  ['#2563eb', '#1d4ed8'],
+  ['#7c3aed', '#be185d'],
+]
 
 function CoverPlaceholder({ title }: { title: string }) {
+  const [from, to] = GRADIENTS[title.charCodeAt(0) % GRADIENTS.length]
   return (
     <div
-      className={`w-20 h-24 rounded-xl bg-gradient-to-br ${getCoverGradient(title)} flex items-center justify-center flex-shrink-0`}
+      className="w-16 h-20 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"
+      style={{ background: `linear-gradient(160deg, ${from}, ${to})` }}
     >
-      <span className="text-white text-2xl font-bold">
+      <span className="text-white text-xl font-bold opacity-90">
         {title.charAt(0).toUpperCase()}
       </span>
     </div>
@@ -51,19 +47,24 @@ function CoverPlaceholder({ title }: { title: string }) {
 export default function BookCard({ book }: Props) {
   const confirmedSources = book.sources.filter((s) => CONFIRMED_SOURCES.has(s.sourceName))
   const searchSources = book.sources.filter((s) => !CONFIRMED_SOURCES.has(s.sourceName))
-
   const freeSources = confirmedSources.filter((s) => s.isFree)
   const paidConfirmed = confirmedSources.filter((s) => !s.isFree)
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex gap-4">
+    <div
+      className="rounded-2xl p-4 flex gap-4 transition-all hover:scale-[1.01] cursor-default border"
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        borderColor: 'rgba(255,255,255,0.07)',
+      }}
+    >
       {/* Cover */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 pt-0.5">
         {book.coverUrl ? (
           <img
             src={book.coverUrl}
             alt={book.title}
-            className="w-20 h-24 object-cover rounded-xl"
+            className="w-16 h-20 object-cover rounded-xl shadow-lg"
           />
         ) : (
           <CoverPlaceholder title={book.title} />
@@ -72,13 +73,13 @@ export default function BookCard({ book }: Props) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h2 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 mb-0.5">
+        <h2 className="font-bold text-base leading-snug line-clamp-2 mb-0.5" style={{ color: '#f1f0f5' }}>
           {book.title}
         </h2>
-        <p className="text-sm text-gray-400 mb-2">{book.author}</p>
+        <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{book.author}</p>
 
         {/* Meta */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+        <div className="flex items-center gap-2 text-xs mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
           {book.durationSeconds && (
             <span className="flex items-center gap-1">
               <ClockIcon />
@@ -93,10 +94,12 @@ export default function BookCard({ book }: Props) {
           )}
         </div>
 
-        {/* Confirmed sources */}
+        {/* Confirmed available on */}
         {confirmedSources.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs font-medium text-gray-400 mb-1.5">Available on</p>
+          <div className="mb-2.5">
+            <p className="text-xs font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              Available on
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {freeSources.map((s) => (
                 <SourceBadge key={s.sourceName} source={s} />
@@ -111,7 +114,9 @@ export default function BookCard({ book }: Props) {
         {/* Affiliate search links */}
         {searchSources.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-gray-400 mb-1.5">Also search on</p>
+            <p className="text-xs font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              Also search on
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {searchSources.map((s: BookSource) => (
                 <SourceBadge key={s.sourceName} source={s} muted />
