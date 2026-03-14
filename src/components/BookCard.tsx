@@ -1,139 +1,123 @@
 import type { Book, BookSource } from '../types/book'
 import SourceBadge from './SourceBadge'
 
-interface Props {
-  book: Book
-}
-
-const CONFIRMED_SOURCES = new Set([
-  'librivox',
-  'internet_archive',
-  'openlibrary',
-  'apple_books',
-  'google_play',
+const CONFIRMED = new Set([
+  'librivox', 'internet_archive', 'openlibrary', 'apple_books', 'google_play',
 ])
 
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  if (h > 0) return `${h}h ${m}m`
-  return `${m}m`
-}
-
 const GRADIENTS = [
-  ['#7c3aed', '#4f46e5'],
-  ['#db2777', '#9d174d'],
-  ['#d97706', '#b45309'],
-  ['#0891b2', '#0e7490'],
-  ['#059669', '#047857'],
-  ['#2563eb', '#1d4ed8'],
-  ['#7c3aed', '#be185d'],
+  ['#7c3aed','#4338ca'],
+  ['#be185d','#9d174d'],
+  ['#b45309','#92400e'],
+  ['#0e7490','#164e63'],
+  ['#047857','#065f46'],
+  ['#1d4ed8','#1e3a8a'],
+  ['#7c3aed','#9d174d'],
 ]
 
-function CoverPlaceholder({ title }: { title: string }) {
-  const [from, to] = GRADIENTS[title.charCodeAt(0) % GRADIENTS.length]
+function formatDuration(s: number) {
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
+}
+
+function Cover({ book }: { book: Book }) {
+  const [from, to] = GRADIENTS[book.title.charCodeAt(0) % GRADIENTS.length]
+
+  if (book.coverUrl) {
+    return (
+      <img
+        src={book.coverUrl}
+        alt={book.title}
+        className="flex-shrink-0 rounded-xl object-cover shadow-lg"
+        style={{ width: 60, height: 80 }}
+      />
+    )
+  }
+
   return (
     <div
-      className="w-16 h-20 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"
-      style={{ background: `linear-gradient(160deg, ${from}, ${to})` }}
+      className="flex-shrink-0 rounded-xl flex items-center justify-center shadow-lg"
+      style={{ width: 60, height: 80, background: `linear-gradient(160deg,${from},${to})` }}
     >
-      <span className="text-white text-xl font-bold opacity-90">
-        {title.charAt(0).toUpperCase()}
+      <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 22, fontWeight: 700 }}>
+        {book.title.charAt(0).toUpperCase()}
       </span>
     </div>
   )
 }
 
-export default function BookCard({ book }: Props) {
-  const confirmedSources = book.sources.filter((s) => CONFIRMED_SOURCES.has(s.sourceName))
-  const searchSources = book.sources.filter((s) => !CONFIRMED_SOURCES.has(s.sourceName))
-  const freeSources = confirmedSources.filter((s) => s.isFree)
-  const paidConfirmed = confirmedSources.filter((s) => !s.isFree)
+export default function BookCard({ book }: { book: Book }) {
+  const confirmed   = book.sources.filter((s) => CONFIRMED.has(s.sourceName))
+  const suggestions = book.sources.filter((s) => !CONFIRMED.has(s.sourceName))
+  const free        = confirmed.filter((s) => s.isFree)
+  const paid        = confirmed.filter((s) => !s.isFree)
 
   return (
-    <div
-      className="rounded-2xl p-4 flex gap-4 transition-all hover:scale-[1.01] cursor-default border"
-      style={{
-        background: 'rgba(255,255,255,0.04)',
-        borderColor: 'rgba(255,255,255,0.07)',
-      }}
-    >
-      {/* Cover */}
-      <div className="flex-shrink-0 pt-0.5">
-        {book.coverUrl ? (
-          <img
-            src={book.coverUrl}
-            alt={book.title}
-            className="w-16 h-20 object-cover rounded-xl shadow-lg"
-          />
-        ) : (
-          <CoverPlaceholder title={book.title} />
-        )}
-      </div>
+    <article className="book-card flex gap-4 p-4">
+      <Cover book={book} />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
-        <h2 className="font-bold text-base leading-snug line-clamp-2 mb-0.5" style={{ color: '#f1f0f5' }}>
+        {/* Title + author */}
+        <h2
+          className="font-bold leading-snug line-clamp-2 mb-0.5"
+          style={{ fontSize: 15, color: 'var(--text-1)' }}
+        >
           {book.title}
         </h2>
-        <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{book.author}</p>
+        <p className="text-sm mb-2.5 truncate" style={{ color: 'var(--text-2)' }}>
+          {book.author}
+        </p>
 
         {/* Meta */}
-        <div className="flex items-center gap-2 text-xs mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <div className="flex items-center gap-1.5 mb-3" style={{ color: 'var(--text-4)', fontSize: 12 }}>
           {book.durationSeconds && (
             <span className="flex items-center gap-1">
               <ClockIcon />
               {formatDuration(book.durationSeconds)}
             </span>
           )}
-          {book.genres[0] && (
-            <>
-              {book.durationSeconds && <span>·</span>}
-              <span>{book.genres[0]}</span>
-            </>
-          )}
+          {book.durationSeconds && book.genres[0] && <span>·</span>}
+          {book.genres[0] && <span className="truncate">{book.genres[0]}</span>}
         </div>
 
-        {/* Confirmed available on */}
-        {confirmedSources.length > 0 && (
+        {/* Confirmed sources */}
+        {confirmed.length > 0 && (
           <div className="mb-2.5">
-            <p className="text-xs font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="mb-1.5" style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Available on
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {freeSources.map((s) => (
-                <SourceBadge key={s.sourceName} source={s} />
-              ))}
-              {paidConfirmed.map((s) => (
+              {[...free, ...paid].map((s) => (
                 <SourceBadge key={s.sourceName} source={s} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Affiliate search links */}
-        {searchSources.length > 0 && (
+        {/* Affiliate suggestions */}
+        {suggestions.length > 0 && (
           <div>
-            <p className="text-xs font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="mb-1.5" style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Also search on
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {searchSources.map((s: BookSource) => (
+              {suggestions.map((s: BookSource) => (
                 <SourceBadge key={s.sourceName} source={s} muted />
               ))}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </article>
   )
 }
 
 function ClockIcon() {
   return (
-    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-      <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2" />
-      <path d="M6 3.5V6l1.5 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M6 3.5V6l1.5 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
   )
 }

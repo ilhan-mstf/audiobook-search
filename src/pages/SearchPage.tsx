@@ -4,34 +4,31 @@ import SearchCounter from '../components/SearchCounter'
 import BookCard from '../components/BookCard'
 
 const DEFAULT_TITLE = 'Audiobook Search — Find Free & Paid Audiobooks Across All Platforms'
-const EXAMPLE_SEARCHES = ['Sherlock Holmes', 'Dune', 'Sapiens', 'Jane Eyre', 'The Hobbit']
+const EXAMPLES = ['Sherlock Holmes', 'Dune', 'Sapiens', 'Pride and Prejudice', 'The Hobbit']
+const PLATFORMS = ['LibriVox', 'Internet Archive', 'Apple Books', 'Audible', 'Spotify', 'Scribd', 'Kobo', 'Libby', 'Hoopla', 'Chirp']
 
 export default function SearchPage() {
-  const [query, setQuery] = useState('')
+  const [query, setQuery]   = useState('')
   const { results, completedCount, isLoading, search, reset } = useSearch()
   const hasSearched = completedCount > 0 || isLoading
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const q = params.get('q')
-    if (q) {
-      setQuery(q)
-      search(q)
-      document.title = `"${q}" — Audiobook Search`
-    }
+    const q = new URLSearchParams(window.location.search).get('q')
+    if (q) { setQuery(q); search(q); document.title = `"${q}" — Audiobook Search` }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function runSearch(term: string) {
+    if (!term.trim()) return
     search(term)
     document.title = `"${term}" — Audiobook Search`
-    const url = new URL(window.location.href)
-    url.searchParams.set('q', term)
-    window.history.pushState({}, '', url)
+    const u = new URL(window.location.href)
+    u.searchParams.set('q', term)
+    window.history.pushState({}, '', u)
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (query.trim()) runSearch(query)
+    runSearch(query)
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -43,87 +40,151 @@ export default function SearchPage() {
     }
   }
 
-  function handleExample(term: string) {
-    setQuery(term)
-    runSearch(term)
-  }
-
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f13' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
 
-      {/* Sticky search bar after search */}
+      {/* ── Sticky header (results state) ─────────────────── */}
       {hasSearched && (
-        <div className="sticky top-0 z-10 border-b border-white/5 backdrop-blur-md" style={{ background: 'rgba(15,15,19,0.85)' }}>
-          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-            <span className="text-lg flex-shrink-0">🎧</span>
+        <header
+          className="sticky top-0 z-20"
+          style={{
+            background: 'rgba(8,8,13,0.8)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+            <span style={{ fontSize: 20, flexShrink: 0 }}>🎧</span>
             <form onSubmit={handleSubmit} className="flex gap-2 flex-1">
               <input
                 type="text"
                 value={query}
                 onChange={handleChange}
                 placeholder="Search audiobooks..."
-                className="flex-1 px-4 py-2 rounded-xl text-sm outline-none border text-white placeholder-white/30 focus:border-violet-500 transition-colors"
-                style={{ background: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }}
+                style={{ padding: '8px 14px', fontSize: 14, borderRadius: 10 }}
               />
               <button
                 type="submit"
                 disabled={!query.trim() || isLoading}
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-white disabled:opacity-30 transition-all"
-                style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+                className="btn-primary"
+                style={{ padding: '8px 18px', borderRadius: 10 }}
               >
                 Search
               </button>
             </form>
           </div>
-        </div>
+        </header>
       )}
 
-      {/* Hero */}
+      {/* ── Hero (landing state) ───────────────────────────── */}
       {!hasSearched && (
-        <div className="flex flex-col items-center justify-center min-h-screen px-4 pb-20 relative overflow-hidden">
-          {/* Background glow */}
+        <main className="flex flex-col items-center justify-center px-4" style={{ minHeight: '100vh', paddingBottom: 80 }}>
+          {/* Glow */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            aria-hidden="true"
             style={{
-              background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 70%)',
+              position: 'fixed',
+              top: 0, left: '50%',
+              transform: 'translateX(-50%)',
+              width: 800, height: 500,
+              background: 'radial-gradient(ellipse at center, rgba(124,58,237,0.12) 0%, transparent 70%)',
+              pointerEvents: 'none',
             }}
           />
 
-          <div className="relative z-10 text-center w-full max-w-2xl">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-8 border"
-              style={{ background: 'rgba(124,58,237,0.15)', borderColor: 'rgba(124,58,237,0.3)', color: '#a78bfa' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block" />
-              Search across 10+ audiobook platforms
+          <div className="relative w-full" style={{ maxWidth: 620 }}>
+            {/* Eyebrow */}
+            <div className="flex justify-center mb-7">
+              <span
+                className="inline-flex items-center gap-2"
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 99,
+                  border: '1px solid var(--accent-border)',
+                  background: 'var(--accent-dim)',
+                  color: 'var(--accent-text)',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                <span
+                  style={{
+                    width: 6, height: 6,
+                    borderRadius: '50%',
+                    background: 'var(--accent-text)',
+                    animation: 'pulse 2s infinite',
+                  }}
+                />
+                {PLATFORMS.length}+ audiobook platforms, one search
+              </span>
             </div>
 
-            <h1 className="text-6xl font-bold tracking-tight mb-4" style={{ color: '#f1f0f5', letterSpacing: '-0.03em' }}>
-              Find any audiobook,<br />
-              <span style={{ background: 'linear-gradient(135deg, #a78bfa, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                anywhere it exists.
+            {/* Heading */}
+            <h1
+              className="text-center mb-4"
+              style={{
+                fontSize: 'clamp(36px, 6vw, 58px)',
+                fontWeight: 800,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.1,
+                color: 'var(--text-1)',
+              }}
+            >
+              Find any audiobook,{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                everywhere it exists.
               </span>
             </h1>
 
-            <p className="text-lg mb-10" style={{ color: 'rgba(241,240,245,0.45)' }}>
-              One search. See every platform — free, library, or paid.
+            <p
+              className="text-center mb-8"
+              style={{ fontSize: 17, color: 'var(--text-2)', lineHeight: 1.6 }}
+            >
+              Free on LibriVox? Available at your library? On Audible?
+              <br />
+              We check all platforms at once and show you every option.
             </p>
 
             {/* Search bar */}
-            <form onSubmit={handleSubmit} className="relative mb-5">
-              <div className="flex gap-2 p-1.5 rounded-2xl border" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}>
+            <form onSubmit={handleSubmit}>
+              <div
+                className="flex gap-2 p-1.5"
+                style={{
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-strong)',
+                  borderRadius: 'var(--radius-xl)',
+                }}
+              >
                 <input
                   type="text"
                   value={query}
                   onChange={handleChange}
-                  placeholder="Search by title or author..."
+                  placeholder="Search by title or author…"
                   autoFocus
-                  className="flex-1 px-4 py-3 rounded-xl text-base outline-none bg-transparent text-white placeholder-white/25"
+                  style={{
+                    padding: '12px 16px',
+                    fontSize: 16,
+                    border: 'none',
+                    background: 'transparent',
+                    boxShadow: 'none',
+                    borderRadius: 'var(--radius-lg)',
+                    flex: 1,
+                  }}
                 />
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-30 transition-all text-sm"
-                  style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+                  className="btn-primary"
+                  style={{ padding: '12px 24px', borderRadius: 'var(--radius-lg)' }}
                 >
                   Search
                 </button>
@@ -131,30 +192,35 @@ export default function SearchPage() {
             </form>
 
             {/* Example chips */}
-            <div className="flex flex-wrap justify-center gap-2">
-              <span className="text-sm self-center" style={{ color: 'rgba(255,255,255,0.25)' }}>Try:</span>
-              {EXAMPLE_SEARCHES.map((term) => (
+            <div className="flex flex-wrap justify-center gap-2 mt-5">
+              <span style={{ fontSize: 13, color: 'var(--text-3)', alignSelf: 'center' }}>Try:</span>
+              {EXAMPLES.map((term) => (
                 <button
                   key={term}
-                  onClick={() => handleExample(term)}
-                  className="px-3 py-1.5 rounded-full text-sm transition-all border hover:border-violet-500/50"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    borderColor: 'rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.5)',
-                  }}
+                  onClick={() => { setQuery(term); runSearch(term) }}
+                  className="btn-ghost"
+                  style={{ padding: '5px 12px', fontSize: 13 }}
                 >
                   {term}
                 </button>
               ))}
             </div>
+
+            {/* Platform list */}
+            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-12">
+              {PLATFORMS.map((p) => (
+                <span key={p} style={{ fontSize: 12, color: 'var(--text-4)', letterSpacing: '0.02em' }}>
+                  {p}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        </main>
       )}
 
-      {/* Results */}
+      {/* ── Results ────────────────────────────────────────── */}
       {hasSearched && (
-        <div className="max-w-3xl mx-auto px-4 pt-6 pb-16">
+        <main className="max-w-2xl mx-auto px-4 pt-6 pb-20">
           <SearchCounter
             completedCount={completedCount}
             isLoading={isLoading}
@@ -162,19 +228,23 @@ export default function SearchPage() {
           />
 
           {results.length === 0 && !isLoading && (
-            <div className="text-center mt-32">
-              <p className="text-4xl mb-4">📭</p>
-              <p className="font-semibold text-white/70">No audiobooks found for "{query}"</p>
-              <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>Try a different title or author name</p>
+            <div className="flex flex-col items-center justify-center" style={{ marginTop: 100 }}>
+              <span style={{ fontSize: 40, marginBottom: 16 }}>📭</span>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-2)' }}>
+                No results for "{query}"
+              </p>
+              <p style={{ fontSize: 14, color: 'var(--text-3)', marginTop: 6 }}>
+                Try a different title or author name
+              </p>
             </div>
           )}
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {results.map((book) => (
               <BookCard key={book.id} book={book} />
             ))}
           </div>
-        </div>
+        </main>
       )}
     </div>
   )

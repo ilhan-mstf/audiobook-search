@@ -10,29 +10,35 @@ export default function SearchCounter({ completedCount, isLoading, resultCount }
   if (!isLoading && completedCount === 0) return null
 
   return (
-    <div className="flex items-center gap-2.5 mb-5 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+    <div className="flex items-center gap-2.5 mb-5" style={{ color: 'var(--text-3)', fontSize: 13 }}>
       {isLoading ? (
         <>
-          <span className="flex gap-1">
+          <span className="flex gap-0.5">
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-bounce"
-                style={{ animationDelay: `${i * 0.15}s` }}
+                className="rounded-full animate-bounce"
+                style={{
+                  width: 5,
+                  height: 5,
+                  background: 'var(--accent-text)',
+                  animationDelay: `${i * 0.12}s`,
+                  animationDuration: '0.8s',
+                }}
               />
             ))}
           </span>
           <span>
-            Searched {completedCount} of {TOTAL_SOURCES} sources
+            Searching {completedCount} of {TOTAL_SOURCES} sources
             {resultCount > 0 && (
-              <span style={{ color: 'rgba(255,255,255,0.6)' }}> · {resultCount} found</span>
+              <span style={{ color: 'var(--text-2)' }}> · {resultCount} found</span>
             )}
           </span>
         </>
       ) : (
         <span>
-          Searched {TOTAL_SOURCES} sources ·{' '}
-          <span style={{ color: 'rgba(255,255,255,0.7)' }} className="font-medium">
+          {TOTAL_SOURCES} sources searched ·{' '}
+          <span style={{ color: 'var(--text-2)', fontWeight: 500 }}>
             {resultCount} {resultCount === 1 ? 'book' : 'books'} found
           </span>
         </span>
