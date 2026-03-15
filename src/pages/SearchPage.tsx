@@ -48,13 +48,13 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-canvas flex flex-col">
 
       {/* ── Sticky header (results state) ─────────────────── */}
       {hasSearched && (
         <header className="sticky top-0 z-20 border-b border-[var(--border)] bg-canvas/80 backdrop-blur-xl">
           <div className="max-w-4xl mx-auto px-8 py-4 flex items-center gap-4">
-            <svg className="flex-shrink-0" width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4L6 44h12l6-14 6 14h12L24 4z" fill="#f05635"/><path d="M24 22l-4 10h8l-4-10z" fill="#08080d"/></svg>
+            <svg className="flex-shrink-0" width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4L6 44h12l6-14 6 14h12L24 4z" fill="#f05635"/><path d="M24 22l-4 10h8l-4-10z" fill="var(--logo-cutout)"/></svg>
             <form onSubmit={handleSubmit} className="flex gap-2 flex-1">
               <input
                 type="text"
@@ -73,7 +73,7 @@ export default function SearchPage() {
 
       {/* ── Hero (landing state) ───────────────────────────── */}
       {!hasSearched && (
-        <main className="flex flex-col items-center justify-center px-4 min-h-screen pb-20">
+        <main className="flex flex-col items-center justify-center px-4 flex-1 py-20">
 
           {/* Ambient glow — gradient can't be expressed in Tailwind */}
           <div
@@ -165,6 +165,18 @@ export default function SearchPage() {
             </div>
           </div>
         </main>
+      )}
+
+      {/* ── Illustration footer (landing state) ────────────── */}
+      {!hasSearched && (
+        <footer className="w-full overflow-hidden" aria-hidden="true">
+          <img
+            src="/illustration.svg"
+            alt=""
+            className="mx-auto block opacity-[0.55] dark:opacity-[0.35] select-none"
+            style={{ width: 280, marginBottom: -4 }}
+          />
+        </footer>
       )}
 
       {/* ── Results ────────────────────────────────────────── */}

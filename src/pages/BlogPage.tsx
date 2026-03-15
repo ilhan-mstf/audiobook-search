@@ -14,7 +14,7 @@ export default function BlogPage() {
           <Link to="/" className="flex items-center gap-2 text-ink no-underline hover:opacity-80 transition-opacity">
             <svg width="20" height="20" viewBox="0 0 48 48" fill="none" aria-hidden="true">
               <path d="M24 4L6 44h12l6-14 6 14h12L24 4z" fill="#f05635" />
-              <path d="M24 22l-4 10h8l-4-10z" fill="#08080d" />
+              <path d="M24 22l-4 10h8l-4-10z" fill="var(--logo-cutout)" />
             </svg>
             <span className="font-semibold text-sm">Audiobook Search</span>
           </Link>

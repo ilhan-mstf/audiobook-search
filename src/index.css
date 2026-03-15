@@ -2,34 +2,75 @@
 
 /* ─── Design tokens — registered as Tailwind utilities ───── */
 @theme {
-  --color-canvas:       #08080d;
-  --color-ink:          #f0eeeb;
+  --color-canvas:       var(--canvas);
+  --color-ink:          var(--ink);
   --color-accent:       #f05635;
   --color-accent-dark:  #d9432a;
-  --color-accent-soft:  #ff8a6e;
-  --color-free:         #34d399;
-  --color-lib:          #60a5fa;
+  --color-accent-soft:  var(--accent-soft-val);
+  --color-free:         var(--free-val);
+  --color-lib:          var(--lib-val);
 }
 
-/* ─── RGBA tokens (can't be registered in @theme) ────────── */
+/* ─── Light mode (default) ─────────────────────────────────── */
 :root {
-  --bg-surface:       rgba(255,255,255,0.06);
-  --bg-surface-hover: rgba(255,255,255,0.10);
-  --border:           rgba(255,255,255,0.12);
-  --border-strong:    rgba(255,255,255,0.22);
-  --border-focus:     rgba(240,86,53,0.55);
+  color-scheme: light dark;
 
-  --text-2:           rgba(240,238,235,0.68);
-  --text-3:           rgba(240,238,235,0.48);
-  --text-4:           rgba(240,238,235,0.32);
+  --canvas:           #f8f8fa;
+  --ink:              #111118;
+  --accent-soft-val:  #e84525;
+  --free-val:         #059669;
+  --lib-val:          #2563eb;
 
-  --accent-dim:       rgba(240,86,53,0.14);
-  --accent-border:    rgba(240,86,53,0.40);
+  --bg-surface:       rgba(0,0,0,0.04);
+  --bg-surface-hover: rgba(0,0,0,0.07);
+  --border:           rgba(0,0,0,0.10);
+  --border-strong:    rgba(0,0,0,0.18);
+  --border-focus:     rgba(240,86,53,0.45);
 
-  --free-bg:          rgba(16,185,129,0.12);
-  --free-border:      rgba(16,185,129,0.32);
-  --lib-bg:           rgba(59,130,246,0.12);
-  --lib-border:       rgba(59,130,246,0.32);
+  --text-2:           rgba(17,17,24,0.65);
+  --text-3:           rgba(17,17,24,0.45);
+  --text-4:           rgba(17,17,24,0.30);
+
+  --accent-dim:       rgba(240,86,53,0.10);
+  --accent-border:    rgba(240,86,53,0.35);
+
+  --free-bg:          rgba(5,150,105,0.10);
+  --free-border:      rgba(5,150,105,0.28);
+  --lib-bg:           rgba(37,99,235,0.10);
+  --lib-border:       rgba(37,99,235,0.28);
+
+  --logo-cutout:      #f8f8fa;
+}
+
+/* ─── Dark mode ────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas:           #08080d;
+    --ink:              #f0eeeb;
+    --accent-soft-val:  #ff8a6e;
+    --free-val:         #34d399;
+    --lib-val:          #60a5fa;
+
+    --bg-surface:       rgba(255,255,255,0.06);
+    --bg-surface-hover: rgba(255,255,255,0.10);
+    --border:           rgba(255,255,255,0.12);
+    --border-strong:    rgba(255,255,255,0.22);
+    --border-focus:     rgba(240,86,53,0.55);
+
+    --text-2:           rgba(240,238,235,0.68);
+    --text-3:           rgba(240,238,235,0.48);
+    --text-4:           rgba(240,238,235,0.32);
+
+    --accent-dim:       rgba(240,86,53,0.14);
+    --accent-border:    rgba(240,86,53,0.40);
+
+    --free-bg:          rgba(16,185,129,0.12);
+    --free-border:      rgba(16,185,129,0.32);
+    --lib-bg:           rgba(59,130,246,0.12);
+    --lib-border:       rgba(59,130,246,0.32);
+
+    --logo-cutout:      #08080d;
+  }
 }
 
 /* ─── Base (inside @layer so Tailwind utilities can override) */
@@ -38,8 +79,8 @@
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background: #08080d;
-    color: #f0eeeb;
+    background: var(--canvas);
+    color: var(--ink);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -65,14 +106,14 @@
   line-height: 1.75;
   font-size: 16px;
 }
-.prose h2 { color: #f0eeeb; font-size: 1.375rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
-.prose h3 { color: #f0eeeb; font-size: 1.125rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; }
+.prose h2 { color: var(--ink); font-size: 1.375rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+.prose h3 { color: var(--ink); font-size: 1.125rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; }
 .prose p { margin-bottom: 1.25rem; }
-.prose strong { color: #f0eeeb; font-weight: 600; }
+.prose strong { color: var(--ink); font-weight: 600; }
 .prose em { font-style: italic; }
-.prose a { color: #ff8a6e; text-decoration: underline; text-underline-offset: 2px; }
+.prose a { color: var(--accent-soft-val); text-decoration: underline; text-underline-offset: 2px; }
 .prose a:hover { color: #f05635; }
-.prose code { background: rgba(255,255,255,0.08); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+.prose code { background: var(--bg-surface); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
 .prose ul { margin-bottom: 1.25rem; padding-left: 1.5rem; list-style-type: disc; }
 .prose li { margin-bottom: 0.5rem; }
 .prose hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
